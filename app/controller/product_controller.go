@@ -3,6 +3,7 @@ package controller
 import (
 	"go-restfull/app/request"
 	"go-restfull/app/service"
+	"go-restfull/app/trait"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -30,27 +31,16 @@ func (pc *ProductController) GetAllProducts(c *fiber.Ctx) error {
 	}
 
 	if len(products) == 0 {
-		return c.Status(404).JSON(fiber.Map{
-			"status":  "Not Found",
-			"message": "No products found",
-		})
+		return c.Status(404).JSON(trait.DataNotFoundResponse("No products found"))
 	}
 
-	return c.Status(200).JSON(fiber.Map{
-		"status":  "Success",
-		"message": "Products retrieved successfully",
-		"data":    products,
-	})
+	return c.Status(200).JSON(trait.SuccessResponse("Products retrieved successfully", products))
 }
 
 func (pc *ProductController) CreateDataProduct(c *fiber.Ctx) error {
 	req := new(request.CreateProductRequest)
 	if err := c.BodyParser(req); err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"status":  "Bad Request",
-			"message": "Invalid request body",
-			"error":   err.Error(),
-		})
+		return c.Status(400).JSON(trait.ErrorResponse("Bad Request", "Invalid request body", err.Error()))
 	}
 	if err := validate.Struct(req); err != nil {
 		errorss := make(map[string]string)
@@ -66,16 +56,8 @@ func (pc *ProductController) CreateDataProduct(c *fiber.Ctx) error {
 
 	product, err := pc.service.CreateDataProduct(*req)
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"status":  "Bad Request",
-			"message": "Failed to create product",
-			"error":   err.Error(),
-		})
+		return c.Status(500).JSON(trait.ErrorResponse("Internal Server Error", "Failed to create product", err.Error()))
 	}
 
-	return c.Status(201).JSON(fiber.Map{
-		"status":  "Created",
-		"message": "Product created successfully",
-		"data":    product,
-	})
+	return c.Status(201).JSON(trait.SuccessResponse("Product created successfully", product)) 
 }
