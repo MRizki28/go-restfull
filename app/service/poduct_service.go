@@ -9,6 +9,9 @@ import (
 type ProductService interface {
 	GetAllProducts(search string) ([]model.ProductModel, error)
 	CreateDataProduct(req request.CreateProductRequest) (product *model.ProductModel, err error)
+	GetDataById(id int) (*model.ProductModel, error)
+	UpdateData(id int, req request.CreateProductRequest) (product *model.ProductModel,err error)
+	DeleteData(id int) error
 }
 
 type productService struct {
@@ -34,6 +37,28 @@ func (s *productService) CreateDataProduct(req request.CreateProductRequest) (pr
 	}
 	
 	return product, nil
+}
+
+func (s *productService) GetDataById(id int) (*model.ProductModel, error) {
+	return s.repo.GetDataById(id)
+}
+
+func (s *productService) UpdateData(id int, req request.CreateProductRequest) (product *model.ProductModel,err error) {
+	product = &model.ProductModel{
+		Name:  req.Name,
+		Price: req.Price,
+	}
+
+	updatedProduct, err := s.repo.UpdateData(id, product)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedProduct, nil
+}
+
+func (s *productService) DeleteData(id int) error {
+	return s.repo.DeleteData(id)
 }
 
 

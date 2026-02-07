@@ -22,6 +22,13 @@ func DataNotFoundResponse(message string) ResponseAPI {
 	}
 }
 
+func DeleteDataSuccessResponse(message string) ResponseAPI {
+	return ResponseAPI{
+		Status:  "Success",
+		Message: message,
+	}
+}
+
 func ErrorResponse(status string, message string, err interface{}) ResponseAPI {
 	return ResponseAPI{
 		Status:  status,
