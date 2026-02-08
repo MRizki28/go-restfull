@@ -2,6 +2,7 @@ package routes
 
 import (
 	"go-restfull/app/controller"
+	"go-restfull/app/middleware"
 	"go-restfull/app/repository"
 	"go-restfull/app/service"
 
@@ -19,7 +20,7 @@ func SetupRoutes(app *fiber.App) {
 
 	api := app.Group("/api/v1")
 
-	product := api.Group("/product")
+	product := api.Group("/product" , middleware.AuthMiddleware)
 	product.Get("/", ProductController.GetAllProducts)
 	product.Post("/create", ProductController.CreateDataProduct)
 	product.Get("/get/:id", ProductController.GetDataById)
